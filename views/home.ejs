@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .hero {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            padding: 40px 0 30px;
+            margin-bottom: 30px;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        .table th {
+            background-color: #6366f1;
+            color: white;
+            font-weight: 500;
+        }
+        .table td {
+            vertical-align: middle;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .short-id-badge {
+            background-color: #ede9fe;
+            color: #6366f1;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .btn-generate {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+        }
+        .btn-generate:hover {
+            opacity: 0.9;
+            color: white;
+        }
+        .generated-url {
+            background-color: #ede9fe;
+            border-left: 4px solid #6366f1;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="hero">
+        <div class="container">
+            <h1 class="fw-bold mb-1">🔗 URL Shortener</h1>
+            <p class="mb-0 opacity-75">Shorten your long URLs instantly</p>
+        </div>
+    </div>
+
+    <div class="container pb-5">
+
+        <!-- Generated URL Alert -->
+        <% if(locals.id) { %>
+        <div class="generated-url p-3 mb-4 d-flex align-items-center gap-2">
+            <span class="text-success fw-bold">✅ Generated:</span>
+            <a href="http://localhost:8001/<%= id %>" class="text-decoration-none text-primary fw-semibold">
+                http://localhost:8001/<%= id %>
+            </a>
+        </div>
+        <% } %>
+
+        <!-- Form Card -->
+        <div class="card mb-4">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3 fw-semibold">Enter a URL to shorten</h5>
+                <form method="POST" action="/url" class="d-flex gap-2 flex-wrap">
+                    <input 
+                        type="text" 
+                        name="url" 
+                        placeholder="https://example.com" 
+                        class="form-control flex-grow-1"
+                        style="max-width: 500px;"
+                    >
+                    <button type="submit" class="btn btn-generate">Generate URL</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table Card -->
+        <% if (locals.urls) { %>
+        <div class="card">
+            <div class="card-body p-0">
+                <div class="p-4 pb-2">
+                    <h5 class="fw-semibold mb-0">All Shortened URLs</h5>
+                    <small class="text-muted"><%= urls.length %> URL(s) generated</small>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">#</th>
+                                <th>Short ID</th>
+                                <th>Original URL</th>
+                                <th style="width: 100px;">Clicks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% urls.forEach((url, index) => { %>
+                            <tr>
+                                <td class="text-muted"><%= index + 1 %></td>
+                                <td>
+                                    <a href="http://localhost:8001/<%= url.shortId %>" 
+                                       class="short-id-badge text-decoration-none">
+                                        <%= url.shortId %>
+                                    </a>
+                                </td>
+                                <td class="text-truncate" style="max-width: 400px;">
+                                    <a href="<%= url.redirectURL %>" target="_blank" class="text-decoration-none text-dark">
+                                        <%= url.redirectURL %>
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success rounded-pill">
+                                        <%= url.visitHistory.length %> clicks
+                                    </span>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
